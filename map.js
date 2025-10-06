@@ -21,7 +21,7 @@ Main = (function() {
     
     const view = new SceneView({
         container: "map",
-        viewingMode: "global",
+        viewingMode: "local",
         map: map,
         camera: {
             position: {
@@ -39,6 +39,7 @@ Main = (function() {
         popup: {
             dockEnabled: true,
             dockOptions: {
+                position: "bottom-left",
                 breakpoint: false
             }
         },
@@ -67,11 +68,11 @@ Main = (function() {
                                 
             const markerSymbol = {                            
                 type: "simple-marker",                             
-                color: [0, 0, 255],         //change rgb values                   
+                color: [255, 255, 0],         //change rgb values                   
                 outline: {
                               
                     // autocasts as new SimpleLineSymbol()                              
-                    color: [255, 255, 255],                             
+                    color: [0, 0, 0],                             
                     width: 2
                             
                 }
@@ -82,7 +83,7 @@ Main = (function() {
                 geometry: point,                            
                 symbol: markerSymbol,                            
                 popupTemplate: {                                
-                    title: key + ": " + value.city + ", " + value.state         //this makes popup template                   
+                    title: key + ": " + value.city + ", " + value.state + ", " + value.country        //this makes popup template                   
                 }                  
             });
                           
