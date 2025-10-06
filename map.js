@@ -1,12 +1,11 @@
 var Main;
 
-// Assuming you're using a bundler or ES module-compatible environment
-
 import Map from "https://js.arcgis.com/4.33/@arcgis/core/Map.js";
 import Graphic from "https://js.arcgis.com/4.33/@arcgis/core/Graphic.js";
 import GraphicsLayer from "https://js.arcgis.com/4.33/@arcgis/core/layers/GraphicsLayer.js";
 import ElevationLayer from "https://js.arcgis.com/4.33/@arcgis/core/layers/ElevationLayer.js";
 import SceneView from "https://js.arcgis.com/4.33/@arcgis/core/views/SceneView.js";
+
 
 Main = (function() {
     const layer = new ElevationLayer({
@@ -25,9 +24,9 @@ Main = (function() {
         map: map,
         camera: {
             position: {
-                x: -105.503,
-                y: 44.270,
-                z: 20000000,
+                x: -11.875182,
+                y: 40.243695,
+                z: 40000000,
                 spatialReference: {
                     wkid: 4326
     
@@ -49,8 +48,16 @@ Main = (function() {
                 directShadowsEnabled: false
             }
         }
+        
     });
-                
+
+view.on("click", function(event) {
+        view.goTo({
+            target: event.mapPoint,
+            zoom: 10
+        });
+ });
+
     const initMap = function(){
                           
         const graphicsLayer = new GraphicsLayer();               
@@ -93,7 +100,7 @@ Main = (function() {
         }
                                     
     }
-                
+
     initMap()
                 
     return {};
