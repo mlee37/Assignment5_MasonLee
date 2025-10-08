@@ -1,11 +1,7 @@
-var Main;
-
 import Map from "https://js.arcgis.com/4.33/@arcgis/core/Map.js";
+import MapView from "https://js.arcgis.com/4.33/@arcgis/core/views/MapView.js";
 import Graphic from "https://js.arcgis.com/4.33/@arcgis/core/Graphic.js";
 import FeatureLayer from "https://js.arcgis.com/4.33/@arcgis/core/layers/FeatureLayer.js";
-import MapView from "https://js.arcgis.com/4.33/@arcgis/core/views/MapView.js";
-import clusterPopupCreator from "https://js.arcgis.com/4.33/@arcgis/core/smartMapping/popup/clusters.js";
-import clusterLabelCreator from "https://js.arcgis.com/4.33/@arcgis/core/smartMapping/labels/clusters.js";
 
 const places = [
   {
@@ -55,105 +51,82 @@ const places = [
     city: "Sandakan",
     state: "Sabah",
     country: "Malaysia"
-  },
+  }
 ];
 
-const graphics = places.map((place, index) => {
-  return new Graphic({
-    geometry: {
-      type: "point",
-      longitude: place.longitude,
-      latitude: place.latitude
-    },
-    attributes: {
-      ObjectID: index + 1,
-      place: place.place
-    }
-  });
-});
+const graphics = places.map((place, index) => new Graphic({
+  geometry: {
+    type: "point",
+    latitude: place.latitude,
+    longitude: place.longitude
+  },
+  attributes: {
+    ObjectID: index + 1,
+    place: place.place,
+    city: place.city,
+    state: place.state,
+    country: place.country
+  }
+}));
 
 const layer = new FeatureLayer({
   source: graphics,
-  fields: [{
-    name: "ObjectID",
-    alias: "ObjectID",
-    type: "oid"
-  }, {
-    name: "place",
-    alias: "Place",
-    type: "string"
-  }],
   objectIdField: "ObjectID",
   geometryType: "point",
+  fields: [
+    { name: "ObjectID", type: "oid" },
+    { name: "place", type: "string" },
+    { name: "city", type: "string" },
+    { name: "state", type: "string" },
+    { name: "country", type: "string" }
+  ],
+  popupTemplate: {
+    title: "{place}",
+    content: "{city}, {state}, {country}"
+  },
   renderer: {
     type: "simple",
     symbol: {
       type: "simple-marker",
-      color: [255, 255, 0],
+      color: "yellow",
+      size: 5,
       outline: {
-        color: [0, 0, 0],
-        width: 1
+        color: "black",
+        width: 2
       }
     }
   },
-  popupTemplate: {
-    title: "{Place}",
-    content: "{City}, {State}, {Country}"
-            }
+  featureReduction = {
+        type: "cluster",
+        clusterMinSize: 16.5,
+        clusterMaxSize: 20,
+        labelingInfo: [
+          {
+            deconflictionStrategy: "none",
+            labelExpressionInfo: {
+              expression: "Text($feature.cluster_count, '#,###')",
+            },
+            symbol: {
+              type: "text",
+              color: "white",
+              font: {
+                family: "Noto Sans",
+                size: "12px",
+              },
+            },
+            labelPlacement: "center-center",
+          },
+        ],
+      },
+
+const map = new Map({
+  basemap: "hybrid",
+  layers: [layer]
 });
 
-Main = (function() {
-    const map = new Map({
-        basemap: "hybrid",
-        ground: {
-            layers: [layer]
-         },
-    });
-    
- const view = new MapView({
+const view = new MapView({
   container: "map",
   map: map,
   center: [-100, 40],
-  zoom: 4
-popup: {
-    dockEnabled: true,
-    dockOptions: {
-    position: "bottom-left",
-    breakpoint: false
-            }
-        },
-        
-    });
- 
-// Enable clustering
-async function enableClustering(layer) {
-  const popupTemplate = await clusterPopupCreator
-    .getTemplates({ layer })
-    .then(res => res.primaryTemplate.value);
-
-  const { labelingInfo, clusterMinSize } = await clusterLabelCreator
-    .getLabelSchemes({ layer, view })
-    .then(res => res.primaryScheme);
-
-  layer.featureReduction = {
-    type: "cluster",
-    popupTemplate,
-    labelingInfo,
-    clusterMinSize
-  };
-
-  map.add(layer);
-}
-
-enableClustering(layer);
-
-view.on("click", function (event) {
-  view.goTo({
-    target: event.mapPoint,
-    zoom: 10
-  });
+  zoom: 3
 });
-
-
-
-    
