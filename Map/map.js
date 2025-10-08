@@ -5,6 +5,7 @@ import Graphic from "https://js.arcgis.com/4.33/@arcgis/core/Graphic.js";
 import GraphicsLayer from "https://js.arcgis.com/4.33/@arcgis/core/layers/GraphicsLayer.js";
 import ElevationLayer from "https://js.arcgis.com/4.33/@arcgis/core/layers/ElevationLayer.js";
 import SceneView from "https://js.arcgis.com/4.33/@arcgis/core/views/SceneView.js";
+import Search from "https://js.arcgis.com/4.33/@arcgis/core/widgets/Search.js";
 
 
 Main = (function() {
@@ -42,12 +43,6 @@ Main = (function() {
                 breakpoint: false
             }
         },
-        // enable shadows to be cast from the features
-        environment: {
-            lighting: {
-                directShadowsEnabled: false
-            }
-        }
         
     });
 
@@ -100,6 +95,14 @@ view.on("click", function(event) {
         }
                                     
     }
+const searchWidget = new Search({
+  view: view
+});
+
+view.ui.add(searchWidget, {
+  position: "top-left",
+  index: 2
+});
 
     initMap()
                 
